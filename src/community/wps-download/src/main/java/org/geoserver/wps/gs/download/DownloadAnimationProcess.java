@@ -163,11 +163,12 @@ public class DownloadAnimationProcess implements GeoServerProcess {
         try {
             List<Future<Void>> futures = new ArrayList<>();
             int totalTimes = parsedTimes.size();
+            UUID uniqueFileName = randomUUID();
             for (Object parsedTime : parsedTimes) {
                 // turn parsed time into a specification and generate a "WMS" like request based on
                 // it
                 String mapTime = toWmsTimeSpecification(parsedTime);
-                LOGGER.log(Level.FINE, "Building frame for time %s", mapTime);
+                LOGGER.log(Level.FINE, "Building frame for time %s", mapTime);                
                 RenderedImage image =
                         mapper.buildImage(
                                 bbox,
@@ -181,7 +182,7 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                                 serverCache);
                 BufferedImage frame = toBufferedImage(image);
                 LOGGER.log(Level.FINE, "Got frame %s", frame);
-                File outputFile = new File(System.getProperty("java.io.tmpdir"), "saved.png");
+                File outputFile = new File(System.getProperty("java.io.tmpdir"), uniqueFileName + ".png");
                 ImageIO.write(frame, "png", outputFile);
                 Future<Void> future =
                         executor.submit(
